@@ -1,0 +1,157 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Consola de administrador</title>
+        <!--Importar bootstrap-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <!--Importar fontawesome-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <div class="bg-primary">
+            <div class="container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-4 mt-3 mb-3 text-white">
+                        <div class="row">
+                            <div class="col-10">
+                                <h5>Bienvenido {{ user.first_name }} {{ user.last_name }}</h5>
+                            </div>
+                            <div class="col-2 text-center">
+                                <a class="btn btn-warning" href="#"><i class="fa-solid fa-user"></i></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h5>{{ user.datosadicionales.profesionUsuario }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <a class="btn btn-success" href="{% url 'djangoTareas:cerrarSesion' %}"><i class="fa-solid fa-right-from-bracket"></i> Salir</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5 text-center">
+            <h1>Gestion de tareas</h1>
+        </div>
+        <div class="container mt-5">
+            <div class="row justify-content-between">
+                <div class="col-2 text-start">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoUsuario"><i class="fa-solid fa-user-plus"></i> Agregar usuario</button>
+                </div>
+                <div class="col-2 text-end">
+                    <a class="btn btn-success" href="#"><i class="fa-solid fa-download"></i> Descargar</a>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5 container">
+            <div class="row justify-content-center">
+                <div class="col-8">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Numero de celular</th>
+                            <th>Fecha de ingreso</th>
+                            <th>Ver</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuariosTotales %}
+                                <tr>
+                                    <td>{{ usuario.first_name }}</td>
+                                    <td>{{ usuario.last_name }}</td>
+                                    <td>{{ usuario.datosadicionales.nroCelular }}</td>
+                                    <td>{{ usuario.datosadicionales.fechaIngreso|date:"d-m-Y" }}</td>
+                                    {% if usuario == user %}
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    {% else %}
+                                        <td class="text-center"><a href="{% url 'djangoTareas:verUsuario' usuario.id %}" class="btn btn-info"><i class="fa-solid fa-eye"></i></a></td>
+                                        <td class="text-center"><a class="btn btn-warning"><i class="fa-solid fa-edit"></i></a></td>
+                                        <td class="text-center"><a href="{% url 'djangoTareas:eliminarUsuario' usuario.id %}" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+
+<!-- Nuevo usuario -->
+<div class="modal fade" id="nuevoUsuario" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'djangoTareas:consolaAdministrador' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group justify-content-around mb-3">
+                        <div class="col-5">
+                            <label>Nombre de usuario</label>
+                            <input class="form-control" type="text" required name="usernameUsuario">
+                        </div>
+                        <div class="col-5">
+                            <label>Password</label>
+                            <input class="form-control" type="password" required name="contraUsuario">
+                        </div>
+                    </div>
+                    <div class="row form-group justify-content-around mb-3">
+                        <div class="col-5">
+                            <label>Nombre</label>
+                            <input class="form-control" type="text" required name="nombreUsuario">
+                        </div>
+                        <div class="col-5">
+                            <label>Apellido</label>
+                            <input class="form-control" type="text" required name="apellidoUsuario">
+                        </div>
+                    </div>
+                    <div class="row form-group justify-content-around mb-3">
+                        <div class="col-5">
+                            <label>Tipo de usuario</label>
+                            <select class="form-select" name="tipoUsuario">
+                                <option value="USUARIO" selected>Usuario</option>
+                                <option value="ADMINISTRADOR">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="col-5">
+                            <label>Numero de celular</label>
+                            <input class="form-control" type="text" required name="nroCelular">
+                        </div>
+                    </div>
+                    <div class="row form-group justify-content-around mb-3">
+                        <div class="col-5">
+                            <label>Profesion</label>
+                            <input class="form-control" type="text" required name="profesionUsuario">
+                        </div>
+                        <div class="col-5">
+                            <label>Email</label>
+                            <input class="form-control" type="email" required name="emailUsuario" required>
+                        </div>
+                    </div>
+                    <div class="row form-group justify-content-around mb-3">
+                        <div class="col-11">
+                            <label>Perfil de usuario</label>
+                            <textarea class="form-control" type="text" required rows="3" name="perfilUsuario"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
